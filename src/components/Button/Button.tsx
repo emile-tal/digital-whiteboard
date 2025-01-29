@@ -1,11 +1,12 @@
 import './Button.scss'
 
 interface Props {
-    text: string
+    action: string
+    callBackend: (action: string) => void
 }
 
-export function Button({ text }: Props) {
+export function Button({ action, callBackend }: Props) {
     return (
-        <button>{text}</button>
+        <button onClick={() => callBackend(action)}>{action}</button>
     )
 }

@@ -1,4 +1,4 @@
-export function backendCall(mode: string) {
+export function requestToServer(mode: string) {
     if (mode === 'write') {
         return ['write', "This is a hardcoded mock of an AI backend writing something on the whiteboard."]
     } else if (mode === 'append') {
