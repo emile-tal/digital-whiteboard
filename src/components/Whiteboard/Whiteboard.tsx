@@ -14,6 +14,7 @@ export function Whiteboard({ whiteboardContent, annotateIndices }: Props) {
     const displayedTextRef = useRef('')
     const annotateRefs = useRef<(HTMLSpanElement | null)[]>([])
 
+    // Wrap the text within the annotateIndices in a span so that they can be annotated
     const annotateText = () => {
         let result = []
         let lastIndex = 0
@@ -44,7 +45,9 @@ export function Whiteboard({ whiteboardContent, annotateIndices }: Props) {
     useEffect(() => {
         annotateRefs.current.forEach((ref) => {
             if (ref) {
-                const annotation = annotate(ref, { type: 'underline', color: 'orange' });
+                const annotation = annotate(ref, { type: 'underline', color: 'blue' })
+
+                // Only annotate most recent annotation so as not to repeatedly animate the same element
                 if (annotateRefs.current.indexOf(ref) === annotateRefs.current.length - 1) {
                     annotation.show()
                 }
@@ -53,7 +56,18 @@ export function Whiteboard({ whiteboardContent, annotateIndices }: Props) {
     }, [annotateIndices])
 
     useEffect(() => {
-        let i = displayedText.length
+        let i: number
+
+        // Check if whiteboardContent text has been replaced or if text has been appended
+        if (whiteboardContent.slice(0, displayedText.length) === displayedText) {
+            i = displayedText.length
+        } else {
+            i = 0
+            setDisplayedText('')
+            displayedTextRef.current = ''
+        }
+
+        // Add letters one by one to displayedText, use a ref to account for state being asynchronous
         const displayTextInterval = setInterval(() => {
             if (i < whiteboardContent.length) {
                 const nextChar = whiteboardContent[i]
@@ -63,7 +77,8 @@ export function Whiteboard({ whiteboardContent, annotateIndices }: Props) {
             } else {
                 clearInterval(displayTextInterval)
             }
-        }, 100)
+        }, 75)
+
         return () => clearInterval(displayTextInterval)
     }, [whiteboardContent])
 

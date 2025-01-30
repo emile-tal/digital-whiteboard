@@ -7,7 +7,7 @@ import { useState } from 'react'
 
 function App() {
   const [whiteboardContent, setWhiteboardContent] = useState('')
-  const [annotateIndices, setAnnotateIndices] = useState([])
+  const [annotateIndices, setAnnotateIndices] = useState<[number, number][]>([])
 
   const getRegexMatch = (regex: RegExp, index: number) => {
     let regexArray

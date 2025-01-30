@@ -1,9 +1,17 @@
-@font-face {
-    font-family: "Patrick Hand";
-    src: url('./assets/font/PatrickHand-Regular.ttf');
-}
+@use './styles/mixins' as *;
+@use './styles/variables' as *;
 
-@font-face {
-    font-family: "Quicksand";
-    src: url('./assets/font/Quicksand-VariableFont_wght.ttf');
+.app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-height: 100vh;
+    background-color: $secondary-beige;
+
+    &__button-container {
+        display: flex;
+        gap: 10%;
+    }
 }

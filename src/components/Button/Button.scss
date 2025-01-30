@@ -1,3 +1,17 @@
+@use '../../styles/variables' as *;
+
 .button {
     font-family: Quicksand;
+    text-transform: capitalize;
+    font-size: 1.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    color: $primary-gray;
+    background-color: $primary-pink;
+    border: 1px solid $primary-gray;
+
+    &:hover {
+        cursor: pointer;
+        background-color: #FF8787;
+    }
 }

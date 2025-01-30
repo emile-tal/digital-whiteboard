@@ -1,6 +1,14 @@
+@use '../../styles/variables' as *;
+
 .whiteboard {
-    height: 500px;
-    width: 700px;
-    border: black 1px solid;
+    height: 60vh;
+    width: 60%;
+    background-color: $tertiary-white;
     font-family: 'Patrick Hand';
+    color: $primary-gray;
+    line-height: 2.25rem;
+    font-size: 1.25rem;
+    border: $primary-gray 1px solid;
+    border-radius: 5px;
+    padding: 0.75rem 1rem;
 }
