@@ -7,9 +7,10 @@ import { annotate } from 'rough-notation'
 interface Props {
     whiteboardContent: string
     annotateIndices: [number, number][]
+    removeAnnotations: () => void
 }
 
-export function Whiteboard({ whiteboardContent, annotateIndices }: Props) {
+export function Whiteboard({ whiteboardContent, annotateIndices, removeAnnotations }: Props) {
     const [displayedText, setDisplayedText] = useState('')
     const displayedTextRef = useRef('')
     const annotateRefs = useRef<(HTMLSpanElement | null)[]>([])
@@ -22,7 +23,7 @@ export function Whiteboard({ whiteboardContent, annotateIndices }: Props) {
         annotateIndices.forEach(([start, end], index) => {
             if (lastIndex < start) {
                 result.push(
-                    <span key={`text-${index}`} >{displayedText.slice(lastIndex, start)}</span>
+                    <span key={`text-${index}`}>{displayedText.slice(lastIndex, start)}</span>
                 )
             }
             result.push(
@@ -40,6 +41,18 @@ export function Whiteboard({ whiteboardContent, annotateIndices }: Props) {
         }
 
         return result;
+    }
+
+    const markdownToJsx = (markdown: string) => {
+        return markdown.split('/n').map((line, index) => {
+            if (line.slice(0, 2) === "# ") return <h1 key={index}>{line.slice(2)}</h1>
+            if (line.slice(0, 3) === "## ") return <h2 key={index}>{line.slice(3)}</h2>
+            if (line.slice(0, 4) === "### ") return <h3 key={index}>{line.slice(4)}</h3>
+            if (line.slice(0, 2) === "- ") return <li key={index}>{line.slice(2)}</li>
+            if (line.slice(0, 2) === "**" && line.slice(-2) === "**") return <strong key={index}>{line.slice(2, -2)}</strong>
+            if (line.slice(0, 1) === "*" && line.slice(-1) === "*") return <em key={index}>{line.slice(1, -1)}</em>
+            return <p key={index}>{line}</p>;
+        })
     }
 
     useEffect(() => {
@@ -65,6 +78,7 @@ export function Whiteboard({ whiteboardContent, annotateIndices }: Props) {
             i = 0
             setDisplayedText('')
             displayedTextRef.current = ''
+            removeAnnotations()
         }
 
         // Add letters one by one to displayedText, use a ref to account for state being asynchronous
@@ -77,14 +91,19 @@ export function Whiteboard({ whiteboardContent, annotateIndices }: Props) {
             } else {
                 clearInterval(displayTextInterval)
             }
-        }, 75)
+        }, 50)
 
         return () => clearInterval(displayTextInterval)
     }, [whiteboardContent])
 
     return (
         <div className='whiteboard'>
-            <p>{annotateText()}</p>
+            <div>
+                {annotateText()}
+            </div>
+            <div>
+                {markdownToJsx(displayedText)}
+            </div>
         </div>
     )
 }

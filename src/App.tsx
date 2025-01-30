@@ -45,6 +45,10 @@ function App() {
     }
   }
 
+  const removeAnnotations = () => {
+    setAnnotateIndices([])
+  }
+
   return (
     <div className="app">
       <div className='app__button-container'>
@@ -52,7 +56,7 @@ function App() {
         <Button action='append' callBackend={callBackend} />
         <Button action='annotate' callBackend={callBackend} />
       </div>
-      <Whiteboard whiteboardContent={whiteboardContent} annotateIndices={annotateIndices} />
+      <Whiteboard whiteboardContent={whiteboardContent} annotateIndices={annotateIndices} removeAnnotations={removeAnnotations} />
     </div>
   )
 }

@@ -1,14 +1,21 @@
+@use '../../styles/mixins' as *;
 @use '../../styles/variables' as *;
 
 .whiteboard {
-    height: 60vh;
+    min-height: 60vh;
     width: 60%;
+    max-width: 45rem;
     background-color: $tertiary-white;
     font-family: 'Patrick Hand';
     color: $primary-gray;
-    line-height: 2.25rem;
-    font-size: 1.25rem;
+    font-size: 0.8rem;
     border: $primary-gray 1px solid;
     border-radius: 5px;
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 0.75rem;
+
+    @include tablet {
+        line-height: 2.25rem;
+        font-size: 1.25rem;
+        padding: 0.75rem 1rem;
+    }
 }

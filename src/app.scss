@@ -12,6 +12,14 @@
 
     &__button-container {
         display: flex;
-        gap: 10%;
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 60%;
+
+        @include tablet {
+            flex-direction: row;
+            gap: 1rem;
+            justify-content: center;
+        }
     }
 }
