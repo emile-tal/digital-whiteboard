@@ -4,6 +4,6 @@ export function requestToServer(mode: string) {
     } else if (mode === 'append') {
         return ['append', 'Appending text to the whiteboard.']
     } else if (mode === 'annotate') {
-        return ['annotate', /whiteboard/]
+        return ['annotate', /whiteboard/, 0]
     }
 }
