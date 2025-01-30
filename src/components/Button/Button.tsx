@@ -7,6 +7,6 @@ interface Props {
 
 export function Button({ action, callBackend }: Props) {
     return (
-        <button onClick={() => callBackend(action)}>{action}</button>
+        <button className='button' onClick={() => callBackend(action)}>{action}</button>
     )
 }

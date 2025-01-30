@@ -37,13 +37,14 @@ export function Whiteboard({ whiteboardContent, annotateIndices }: Props) {
                 <span key='text-end'>{displayedText.slice(lastIndex)}</span>
             )
         }
+
         return result;
     }
 
     useEffect(() => {
         annotateRefs.current.forEach((ref) => {
             if (ref) {
-                const annotation = annotate(ref, { type: 'underline', color: 'yellow' });
+                const annotation = annotate(ref, { type: 'underline', color: 'orange' });
                 if (annotateRefs.current.indexOf(ref) === annotateRefs.current.length - 1) {
                     annotation.show()
                 }
