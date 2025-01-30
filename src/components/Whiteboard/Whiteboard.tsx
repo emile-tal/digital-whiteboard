@@ -1,6 +1,6 @@
 import './Whiteboard.scss'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { annotate } from 'rough-notation'
 
@@ -10,6 +10,8 @@ interface Props {
 }
 
 export function Whiteboard({ whiteboardContent, annotateIndices }: Props) {
+    const [displayedText, setDisplayedText] = useState('')
+    const displayedTextRef = useRef('')
     const annotateRefs = useRef<(HTMLSpanElement | null)[]>([])
 
     const annotateText = () => {
@@ -19,24 +21,22 @@ export function Whiteboard({ whiteboardContent, annotateIndices }: Props) {
         annotateIndices.forEach(([start, end], index) => {
             if (lastIndex < start) {
                 result.push(
-                    <span key={`text-${index}`} >{whiteboardContent.slice(lastIndex, start)}</span>
+                    <span key={`text-${index}`} >{displayedText.slice(lastIndex, start)}</span>
                 )
             }
-
             result.push(
                 <span key={`annotated-${index}`} ref={(el) => (annotateRefs.current[index] = el)}>
-                    {whiteboardContent.slice(start, end)}
+                    {displayedText.slice(start, end)}
                 </span>
             )
             lastIndex = end;
         })
 
-        if (lastIndex < whiteboardContent.length) {
+        if (lastIndex < displayedText.length) {
             result.push(
-                <span key='text-end'>{whiteboardContent.slice(lastIndex)}</span>
+                <span key='text-end'>{displayedText.slice(lastIndex)}</span>
             )
         }
-
         return result;
     }
 
@@ -50,6 +50,21 @@ export function Whiteboard({ whiteboardContent, annotateIndices }: Props) {
             }
         })
     }, [annotateIndices])
+
+    useEffect(() => {
+        let i = displayedText.length
+        const displayTextInterval = setInterval(() => {
+            if (i < whiteboardContent.length) {
+                const nextChar = whiteboardContent[i]
+                i++
+                displayedTextRef.current += nextChar
+                setDisplayedText(displayedTextRef.current)
+            } else {
+                clearInterval(displayTextInterval)
+            }
+        }, 100)
+        return () => clearInterval(displayTextInterval)
+    }, [whiteboardContent])
 
     return (
         <div className='whiteboard'>
