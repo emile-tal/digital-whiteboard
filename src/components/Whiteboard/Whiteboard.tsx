@@ -10,6 +10,10 @@ interface Props {
     regexIndex: number
 }
 
+interface RegExpIndices extends RegExpExecArray {
+    indices: [number, number][]
+}
+
 export function Whiteboard({ whiteboardContent, annotateRegex, regexIndex }: Props) {
     const [displayedText, setDisplayedText] = useState('')
     const displayedTextRef = useRef('')
@@ -21,7 +25,7 @@ export function Whiteboard({ whiteboardContent, annotateRegex, regexIndex }: Pro
         // Go through each JSX element to identify matches to regex
         return jsxArray.map((el, index) => {
             const text = el.props.children
-            const regexArray = annotateRegex.exec(text)
+            const regexArray = annotateRegex.exec(text) as RegExpIndices
             if (regexArray) {
                 if (regexMatchCount === regexIndex) {
                     const cloned = cloneElement(
