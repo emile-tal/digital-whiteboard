@@ -17,10 +17,12 @@ export function Whiteboard({ whiteboardContent, annotateRegex, regexIndex }: Pro
 
     const annotateText = (jsxArray: JSX.Element[]): JSX.Element[] => {
         let regexMatchCount = 0
+
+        // Go through each JSX element to identify matches to regex
         return jsxArray.map((el, index) => {
             const text = el.props.children
             const regexArray = annotateRegex.exec(text)
-            if (regexArray !== null) {
+            if (regexArray) {
                 if (regexMatchCount === regexIndex) {
                     const cloned = cloneElement(
                         el,
@@ -46,7 +48,26 @@ export function Whiteboard({ whiteboardContent, annotateRegex, regexIndex }: Pro
             if (line.slice(0, 2) === "- ") return <li key={index}>{line.slice(2)}</li>
             if (line.slice(0, 2) === "**" && line.slice(-2) === "**") return <strong key={index}>{line.slice(2, -2)}</strong>
             if (line.slice(0, 1) === "*" && line.slice(-1) === "*") return <em key={index}>{line.slice(1, -1)}</em>
-            return <p key={index}>{line}</p>;
+
+            // Find any bolded or italic markdown within the paragraph
+            const lineSplit = line.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+            return (
+                <p key={index}>
+                    {lineSplit.map((part, i) => {
+                        if (part.startsWith("**") && part.endsWith("**")) {
+                            return (
+                                <strong key={i}>{part.slice(2, -2)}</strong>
+                            )
+                        } else if (part.startsWith("*") && part.endsWith("*")) {
+                            return (
+                                <em key={i}>{part.slice(1, -1)}</em>
+                            )
+                        } else {
+                            return part
+                        }
+                    })}
+                </p>
+            )
         })
     }
 

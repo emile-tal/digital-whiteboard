@@ -14,7 +14,7 @@ function App() {
     try {
       const [mode, content, index = 0] = requestToServer(action)
       if (mode === 'write') {
-        setWhiteboardContent(content)
+        setWhiteboardContent(String(content))
       } else if (mode === 'append') {
         const newWhiteboardContent = whiteboardContent + '/n' + content
         setWhiteboardContent(newWhiteboardContent)
@@ -22,6 +22,8 @@ function App() {
         const regexWithFlag = new RegExp(content, 'gd')
         setAnnotateRegex(regexWithFlag)
         setRegexIndex(index)
+      } else {
+        console.error(content)
       }
     } catch (e) {
       console.error(e)
