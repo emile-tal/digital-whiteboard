@@ -7,21 +7,8 @@ import { useState } from 'react'
 
 function App() {
   const [whiteboardContent, setWhiteboardContent] = useState('')
-  const [annotateIndices, setAnnotateIndices] = useState<[number, number][]>([])
   const [annotateRegex, setAnnotateRegex] = useState<RegExp>(/\*/)
   const [regexIndex, setRegexIndex] = useState<number>(-1)
-
-  // const getRegexMatch = (regex: RegExp, index: number) => {
-  //   let regexArray
-  //   let count = 0
-  //   while ((regexArray = regex.exec(whiteboardContent)) !== null) {
-  //     if (count === index) {
-  //       return regexArray
-  //     }
-  //     count++
-  //   }
-  //   return null
-  // }
 
   const callBackend = (action: string) => {
     try {
@@ -29,19 +16,12 @@ function App() {
       if (mode === 'write') {
         setWhiteboardContent(content)
       } else if (mode === 'append') {
-        const newWhiteboardContent = whiteboardContent + ' ' + content
+        const newWhiteboardContent = whiteboardContent + '/n' + content
         setWhiteboardContent(newWhiteboardContent)
       } else if (mode === 'annotate') {
         const regexWithFlag = new RegExp(content, 'gd')
         setAnnotateRegex(regexWithFlag)
         setRegexIndex(index)
-        // const match = getRegexMatch(regexWithFlag, index)
-        // if (match) {
-        //   const newAnnotateIndices = [...annotateIndices, match['indices'][0]]
-        //   setAnnotateIndices(newAnnotateIndices)
-        // } else {
-        //   console.error("No expression matches the annotation request")
-        // }
       }
     } catch (e) {
       console.error(e)
@@ -55,7 +35,7 @@ function App() {
         <Button action='append' callBackend={callBackend} />
         <Button action='annotate' callBackend={callBackend} />
       </div>
-      <Whiteboard whiteboardContent={whiteboardContent} annotateIndices={annotateIndices} annotateRegex={annotateRegex} regexIndex={regexIndex} />
+      <Whiteboard whiteboardContent={whiteboardContent} annotateRegex={annotateRegex} regexIndex={regexIndex} />
     </div>
   )
 }

@@ -6,12 +6,11 @@ import { annotate } from 'rough-notation'
 
 interface Props {
     whiteboardContent: string
-    annotateIndices: [number, number][]
     annotateRegex: RegExp
     regexIndex: number
 }
 
-export function Whiteboard({ whiteboardContent, annotateIndices, annotateRegex, regexIndex }: Props) {
+export function Whiteboard({ whiteboardContent, annotateRegex, regexIndex }: Props) {
     const [displayedText, setDisplayedText] = useState('')
     const displayedTextRef = useRef('')
     const annotateRefs = useRef<(HTMLSpanElement | null)[]>([])
@@ -22,7 +21,6 @@ export function Whiteboard({ whiteboardContent, annotateIndices, annotateRegex, 
             const text = el.props.children
             const regexArray = annotateRegex.exec(text)
             if (regexArray !== null) {
-                console.log(regexIndex)
                 if (regexMatchCount === regexIndex) {
                     const cloned = cloneElement(
                         el,
@@ -34,42 +32,11 @@ export function Whiteboard({ whiteboardContent, annotateIndices, annotateRegex, 
                     return cloned
                 }
                 regexMatchCount++
-                console.log(regexMatchCount)
                 return el
             }
             return el
         })
     }
-
-    // Wrap the text within the annotateIndices in a span so that they can be annotated
-    // const annotateText = () => {
-    //     let result = []
-    //     let lastIndex = 0
-
-    //     annotateIndices.forEach(([start, end], index) => {
-    //         if (lastIndex < start) {
-    //             result.push(
-    //                 markdownToJsx(displayedText.slice(lastIndex, start))
-    //                 // <span key={`text-${index}`}>{displayedText.slice(lastIndex, start)}</span>
-    //             )
-    //         }
-    //         result.push(
-    //             <span key={`annotated-${index}`} ref={(el) => (annotateRefs.current[index] = el)}>
-    //                 {displayedText.slice(start, end)}
-    //             </span>
-    //         )
-    //         lastIndex = end;
-    //     })
-
-    //     if (lastIndex < displayedText.length) {
-    //         result.push(
-    //             markdownToJsx(displayedText.slice(lastIndex))
-    //             // <span key='text-end'>{displayedText.slice(lastIndex)}</span>
-    //         )
-    //     }
-
-    //     return result;
-    // }
 
     const markdownToJsx = (markdown: string) => {
         return markdown.split('/n').map((line, index) => {
