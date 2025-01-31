@@ -1,47 +1,75 @@
 import './Whiteboard.scss'
 
-import { useEffect, useRef, useState } from 'react'
+import { cloneElement, useEffect, useRef, useState } from 'react'
 
 import { annotate } from 'rough-notation'
 
 interface Props {
     whiteboardContent: string
     annotateIndices: [number, number][]
-    removeAnnotations: () => void
+    annotateRegex: RegExp
+    regexIndex: number
 }
 
-export function Whiteboard({ whiteboardContent, annotateIndices, removeAnnotations }: Props) {
+export function Whiteboard({ whiteboardContent, annotateIndices, annotateRegex, regexIndex }: Props) {
     const [displayedText, setDisplayedText] = useState('')
     const displayedTextRef = useRef('')
     const annotateRefs = useRef<(HTMLSpanElement | null)[]>([])
 
-    // Wrap the text within the annotateIndices in a span so that they can be annotated
-    const annotateText = () => {
-        let result = []
-        let lastIndex = 0
-
-        annotateIndices.forEach(([start, end], index) => {
-            if (lastIndex < start) {
-                result.push(
-                    <span key={`text-${index}`}>{displayedText.slice(lastIndex, start)}</span>
-                )
+    const annotateText = (jsxArray: JSX.Element[]): JSX.Element[] => {
+        let regexMatchCount = 0
+        return jsxArray.map((el, index) => {
+            const text = el.props.children
+            const regexArray = annotateRegex.exec(text)
+            if (regexArray !== null) {
+                console.log(regexIndex)
+                if (regexMatchCount === regexIndex) {
+                    const cloned = cloneElement(
+                        el,
+                        {},
+                        text.slice(0, regexArray['indices'][0][0]),
+                        <span ref={(el) => (annotateRefs.current[index] = el)}>{text.slice(regexArray['indices'][0][0], regexArray['indices'][0][1])}</span>,
+                        text.slice(regexArray['indices'][0][1])
+                    )
+                    return cloned
+                }
+                regexMatchCount++
+                console.log(regexMatchCount)
+                return el
             }
-            result.push(
-                <span key={`annotated-${index}`} ref={(el) => (annotateRefs.current[index] = el)}>
-                    {displayedText.slice(start, end)}
-                </span>
-            )
-            lastIndex = end;
+            return el
         })
-
-        if (lastIndex < displayedText.length) {
-            result.push(
-                <span key='text-end'>{displayedText.slice(lastIndex)}</span>
-            )
-        }
-
-        return result;
     }
+
+    // Wrap the text within the annotateIndices in a span so that they can be annotated
+    // const annotateText = () => {
+    //     let result = []
+    //     let lastIndex = 0
+
+    //     annotateIndices.forEach(([start, end], index) => {
+    //         if (lastIndex < start) {
+    //             result.push(
+    //                 markdownToJsx(displayedText.slice(lastIndex, start))
+    //                 // <span key={`text-${index}`}>{displayedText.slice(lastIndex, start)}</span>
+    //             )
+    //         }
+    //         result.push(
+    //             <span key={`annotated-${index}`} ref={(el) => (annotateRefs.current[index] = el)}>
+    //                 {displayedText.slice(start, end)}
+    //             </span>
+    //         )
+    //         lastIndex = end;
+    //     })
+
+    //     if (lastIndex < displayedText.length) {
+    //         result.push(
+    //             markdownToJsx(displayedText.slice(lastIndex))
+    //             // <span key='text-end'>{displayedText.slice(lastIndex)}</span>
+    //         )
+    //     }
+
+    //     return result;
+    // }
 
     const markdownToJsx = (markdown: string) => {
         return markdown.split('/n').map((line, index) => {
@@ -66,7 +94,7 @@ export function Whiteboard({ whiteboardContent, annotateIndices, removeAnnotatio
                 }
             }
         })
-    }, [annotateIndices])
+    }, [annotateRegex])
 
     useEffect(() => {
         let i: number
@@ -78,7 +106,6 @@ export function Whiteboard({ whiteboardContent, annotateIndices, removeAnnotatio
             i = 0
             setDisplayedText('')
             displayedTextRef.current = ''
-            removeAnnotations()
         }
 
         // Add letters one by one to displayedText, use a ref to account for state being asynchronous
@@ -99,10 +126,7 @@ export function Whiteboard({ whiteboardContent, annotateIndices, removeAnnotatio
     return (
         <div className='whiteboard'>
             <div>
-                {annotateText()}
-            </div>
-            <div>
-                {markdownToJsx(displayedText)}
+                {annotateText(markdownToJsx(displayedText))}
             </div>
         </div>
     )
